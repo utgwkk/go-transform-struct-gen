@@ -34,12 +34,11 @@ func EmbedStructTagToSrc(dst, src *Struct) error {
 		return err
 	}
 
-	rewrited, err := embedStructTag(dst, src, parsed, st)
-	if err != nil {
+	if err := embedStructTag(dst, src, parsed, st); err != nil {
 		return err
 	}
 
-	if err := format.Node(embedFile, fset, rewrited); err != nil {
+	if err := format.Node(embedFile, fset, parsed); err != nil {
 		return err
 	}
 	embedFile.Seek(0, 0)
@@ -81,10 +80,10 @@ func resolveStruct(src *Struct, f *ast.File) (*ast.StructType, error) {
 	return nil, fmt.Errorf("%s not found", src.Name)
 }
 
-func embedStructTag(dst, src *Struct, file *ast.File, s *ast.StructType) (ast.Node, error) {
+func embedStructTag(dst, src *Struct, file *ast.File, s *ast.StructType) error {
 	dstTy, err := dst.LookupType()
 	if err != nil {
-		return nil, err
+		return err
 	}
 
 	dstFields := make([]string, 0, dstTy.NumFields())
@@ -98,10 +97,9 @@ func embedStructTag(dst, src *Struct, file *ast.File, s *ast.StructType) (ast.No
 
 	srcTy, err := src.LookupType()
 	if err != nil {
-		return nil, err
+		return err
 	}
 
-	var rewrited ast.Node = file
 	for i := 0; i < srcTy.NumFields(); i++ {
 		sf := s.Fields.List[i]
 		if sf.Tag != nil && strings.Contains(sf.Tag.Value, StructTagFieldName) {
@@ -123,30 +121,14 @@ func embedStructTag(dst, src *Struct, file *ast.File, s *ast.StructType) (ast.No
 			}
 		}
 		candidate := distances[0].s
-		rewrited = astutil.Apply(rewrited, nil, func(c *astutil.Cursor) bool {
-			node := c.Node()
-			genDecl, ok := node.(*ast.GenDecl)
-			if !ok {
+		astutil.Apply(s, nil, func(c *astutil.Cursor) bool {
+			n := c.Node()
+			if _, ok := n.(*ast.StructType); !ok {
 				return true
 			}
-			if genDecl.Tok != token.TYPE {
-				return true
-			}
-			spec := genDecl.Specs[0]
-			typeSpec, ok := spec.(*ast.TypeSpec)
-			if !ok {
-				return true
-			}
-			if typeSpec.Name.Name != src.Name {
-				return true
-			}
-			structType, ok := typeSpec.Type.(*ast.StructType)
-			if !ok {
-				return true
-			}
-			sf := structType.Fields.List[i]
+			sf := s.Fields.List[i]
 			if sf.Tag != nil && strings.Contains(sf.Tag.Value, StructTagFieldName) {
-				return true
+				return false
 			}
 			var tagContent string
 			if ignore {
@@ -159,15 +141,15 @@ func embedStructTag(dst, src *Struct, file *ast.File, s *ast.StructType) (ast.No
 				sf.Tag.Value = fmt.Sprintf("`%s`", tagContent)
 			} else {
 				// unquote
-				sf.Tag.Value = sf.Tag.Value[1:len(sf.Tag.Value)-1]
+				sf.Tag.Value = sf.Tag.Value[1 : len(sf.Tag.Value)-1]
 				sf.Tag.Value = fmt.Sprintf("`%s %s`", tagContent, sf.Tag.Value)
 			}
-			c.Replace(node)
+			c.Replace(sf)
 			return false
 		})
 	}
 
-	return rewrited, nil
+	return nil
 }
 
 type levenshteinDistance struct {
