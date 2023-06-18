@@ -29,8 +29,8 @@ func TestGuessFieldCorrespondings(t *testing.T) {
 	}{
 		{
 			name:      "without createdAt, updatedAt",
-			dstStruct: "*github.com/utgwkk/go-transform-struct-gen/internal/testdata/foo.FooModel",
-			srcStruct: "*github.com/utgwkk/go-transform-struct-gen/internal/testdata/bar.BarModel",
+			dstStruct: "*github.com/utgwkk/go-transform-struct-gen/internal/fixtures/foo.FooModel",
+			srcStruct: "*github.com/utgwkk/go-transform-struct-gen/internal/fixtures/bar.BarModel",
 			want: map[string]string{
 				"Id":   "Id",
 				"Name": "Name",

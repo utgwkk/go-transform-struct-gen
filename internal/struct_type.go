@@ -38,3 +38,25 @@ func (s *Struct) LookupType() (*types.Struct, error) {
 
 	return stTy, nil
 }
+
+func (s *Struct) ReturnTypeString(withoutPackageName bool) string {
+	if s.IsRef {
+		if withoutPackageName {
+			return "*"+s.Name
+		}
+		return fmt.Sprintf("*%s.%s", s.PackageName, s.Name)
+	} else {
+		if withoutPackageName {
+			return s.Name
+		}
+		return fmt.Sprintf("%s.%s", s.PackageName, s.Name)
+	}
+}
+
+func (s *Struct) LiteralTypeString() string {
+	if s.IsRef {
+		return fmt.Sprintf("&%s.%s", s.PackageName, s.Name)
+	} else {
+		return fmt.Sprintf("%s.%s", s.PackageName, s.Name)
+	}
+}
