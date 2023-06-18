@@ -1,0 +1,1 @@
+# go-transform-struct-gen
