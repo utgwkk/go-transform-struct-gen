@@ -35,6 +35,11 @@ func GuessFieldCorrespondings(dst, src *types.Struct) map[string]string {
 			if !sf.Exported() {
 				continue
 			}
+			tag := reflect.StructTag(src.Tag(j))
+			parsedTag := ParseStructTag(tag.Get(StructTagFieldName))
+			if parsedTag.Skip {
+				continue
+			}	
 
 			if df.Name() == sf.Name() {
 				corr[df.Name()] = sf.Name()

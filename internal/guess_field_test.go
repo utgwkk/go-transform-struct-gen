@@ -21,6 +21,8 @@ func loadStructType(t *testing.T, packageAndName string) *types.Struct {
 }
 
 func TestGuessFieldCorrespondings(t *testing.T) {
+	t.Parallel()
+
 	testcases := []struct {
 		name      string
 		dstStruct string
@@ -47,10 +49,21 @@ func TestGuessFieldCorrespondings(t *testing.T) {
 				"Age":  "Age",
 			},
 		},
+		{
+			name:      "skippable",
+			dstStruct: "*github.com/utgwkk/go-transform-struct-gen/internal/fixtures/foo.FooModel",
+			srcStruct: "*github.com/utgwkk/go-transform-struct-gen/internal/fixtures/bar.BarModel3",
+			want: map[string]string{
+				"Id":   "Id",
+				"Name": "Name",
+			},
+		},
 	}
 	for _, tc := range testcases {
 		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
+			t.Parallel()
+
 			dst := loadStructType(t, tc.dstStruct)
 			src := loadStructType(t, tc.srcStruct)
 

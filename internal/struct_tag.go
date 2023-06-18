@@ -6,12 +6,19 @@ const StructTagFieldName = "transform_struct"
 
 type StructTag struct {
 	DestinationField string
+	Skip             bool
 }
 
 func ParseStructTag(s string) *StructTag {
 	t := &StructTag{}
 	if s == "" {
 		return t
+	}
+
+	if s == "-" {
+		return &StructTag{
+			Skip: true,
+		}
 	}
 
 	attrs := strings.Split(s, ",")
