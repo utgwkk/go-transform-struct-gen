@@ -16,6 +16,17 @@ const (
 	TransformerTypeMethod   TransformerType = "method"
 )
 
+func TransformerTypeFromString(s string) (TransformerType, error) {
+	switch s {
+	case "function":
+		return TransformerTypeFunction, nil
+	case "method":
+		return TransformerTypeMethod, nil
+	default:
+		return "", fmt.Errorf("invalid transformer type: %s", s)
+	}
+}
+
 type GenerateOption struct {
 	TransformerType TransformerType
 	TramsformerName string
