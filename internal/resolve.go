@@ -27,7 +27,7 @@ func ResolveStruct(packageAndName string) (*Struct, error) {
 	st.Name = packageAndName[dotIndex+1:]
 
 	config := &packages.Config{
-		Mode: packages.NeedName,
+		Mode: packages.NeedName | packages.NeedModule | packages.NeedTypes,
 	}
 	pp, err := packages.Load(config, st.Package)
 	if err != nil {
@@ -36,6 +36,13 @@ func ResolveStruct(packageAndName string) (*Struct, error) {
 
 	pkg := pp[0]
 	st.PackageName = pkg.Name
+	scope := pkg.Types.Scope()
+	baseObj := scope.Lookup(st.Name)
+	if baseObj == nil {
+		return nil, fmt.Errorf("failed to find %s in package %s", st.Name, st.Package)
+	}
+	pos := pkg.Fset.PositionFor(baseObj.Pos(), true)
+	st.FilePath = pos.Filename
 
 	return st, nil
 }

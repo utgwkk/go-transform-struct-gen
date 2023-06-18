@@ -10,6 +10,7 @@ import (
 type Struct struct {
 	Package     string
 	PackageName string
+	FilePath    string
 	Name        string
 	IsRef       bool
 }
@@ -42,7 +43,7 @@ func (s *Struct) LookupType() (*types.Struct, error) {
 func (s *Struct) ReturnTypeString(withoutPackageName bool) string {
 	if s.IsRef {
 		if withoutPackageName {
-			return "*"+s.Name
+			return "*" + s.Name
 		}
 		return fmt.Sprintf("*%s.%s", s.PackageName, s.Name)
 	} else {

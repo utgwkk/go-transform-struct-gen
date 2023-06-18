@@ -3,6 +3,7 @@ module github.com/utgwkk/go-transform-struct-gen
 go 1.18
 
 require (
+	github.com/agnivade/levenshtein v1.1.1
 	github.com/gkampitakis/go-snaps v0.4.6
 	github.com/mfridman/tparse v0.12.2
 	github.com/stretchr/testify v1.8.4
