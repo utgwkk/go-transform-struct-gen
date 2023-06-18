@@ -37,6 +37,16 @@ func TestGuessFieldCorrespondings(t *testing.T) {
 				"Age":  "Age",
 			},
 		},
+		{
+			name:      "without createdAt, updatedAt, mapping",
+			dstStruct: "*github.com/utgwkk/go-transform-struct-gen/internal/fixtures/foo.FooModel",
+			srcStruct: "*github.com/utgwkk/go-transform-struct-gen/internal/fixtures/bar.BarModel2",
+			want: map[string]string{
+				"Id":   "ID",
+				"Name": "Name",
+				"Age":  "Age",
+			},
+		},
 	}
 	for _, tc := range testcases {
 		tc := tc

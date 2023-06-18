@@ -11,3 +11,9 @@ type BarModel struct {
 
 	unexported int
 }
+
+type BarModel2 struct {
+	ID        string `transform_struct:"dst_field=Id"`
+	Name      string
+	Age       int
+}
