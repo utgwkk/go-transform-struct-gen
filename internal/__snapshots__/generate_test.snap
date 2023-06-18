@@ -28,3 +28,18 @@ func (src *BarModel) ToFoo() *foo.FooModel {
 }
 
 ---
+
+[TestGenerate/without_createdAt,_updatedAt_(method,_no_ref) - 1]
+package bar
+
+import "github.com/utgwkk/go-transform-struct-gen/internal/fixtures/foo"
+
+func (src *BarModel) ToFoo() foo.FooModel {
+    return foo.FooModel{
+        Age:  src.Age,
+        Id:   src.Id,
+        Name: src.Name,
+    }
+}
+
+---

@@ -34,6 +34,16 @@ func TestGenerate(t *testing.T) {
 				DestinationPath: "./fixtures/bar/to_foo.go",
 			},
 		},
+		{
+			name:      "without createdAt, updatedAt (method, no ref)",
+			dstStruct: "github.com/utgwkk/go-transform-struct-gen/internal/fixtures/foo.FooModel",
+			srcStruct: "*github.com/utgwkk/go-transform-struct-gen/internal/fixtures/bar.BarModel",
+			opts: &GenerateOption{
+				TransformerType: TransformerTypeMethod,
+				TramsformerName: "ToFoo",
+				DestinationPath: "./fixtures/bar/to_foo.go",
+			},
+		},
 	}
 	for _, tc := range testcases {
 		tc := tc
