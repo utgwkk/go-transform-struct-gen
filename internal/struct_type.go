@@ -8,9 +8,10 @@ import (
 )
 
 type Struct struct {
-	Package string
-	Name    string
-	IsRef   bool
+	Package     string
+	PackageName string
+	Name        string
+	IsRef       bool
 }
 
 func (s *Struct) LookupType() (*types.Struct, error) {
