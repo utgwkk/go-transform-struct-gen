@@ -2,10 +2,9 @@ package internal
 
 import (
 	"fmt"
-	"sort"
+	"go/types"
 	"strings"
 
-	"golang.org/x/exp/maps"
 	"golang.org/x/tools/imports"
 )
 
@@ -48,7 +47,7 @@ func Generate(dst, src *Struct, opts *GenerateOption) (string, error) {
 	var sb strings.Builder
 	writeGeneratedComment(&sb)
 	writePackageDecl(&sb, src)
-	writeTransformer(&sb, dst, src, opts, corr)
+	writeTransformer(&sb, dst, src, tSrc, opts, corr)
 
 	formatted, err := imports.Process(opts.DestinationPath, []byte(sb.String()), nil)
 	if err != nil {
@@ -66,7 +65,7 @@ func writePackageDecl(sb *strings.Builder, s *Struct) {
 	sb.WriteString(fmt.Sprintf("package %s\n\n", s.PackageName))
 }
 
-func writeTransformer(sb *strings.Builder, dst, src *Struct, opts *GenerateOption, corr map[string]string) {
+func writeTransformer(sb *strings.Builder, dst, src *Struct, tSrc *types.Struct, opts *GenerateOption, corr map[string]string) {
 	if opts.TransformerType == TransformerTypeFunction {
 		sb.WriteString(fmt.Sprintf("func %s(src %s) %s {\n", opts.TramsformerName, src.ReturnTypeString(true), dst.ReturnTypeString(false)))
 	} else {
@@ -75,12 +74,17 @@ func writeTransformer(sb *strings.Builder, dst, src *Struct, opts *GenerateOptio
 
 	sb.WriteString(fmt.Sprintf(" return %s{\n", dst.LiteralTypeString()))
 
-	sortedDstFields := maps.Keys(corr)
-	sort.Strings(sortedDstFields)
-
-	for _, dstField := range sortedDstFields {
-		srcField := corr[dstField]
-		sb.WriteString(fmt.Sprintf("  %s: src.%s,\n", dstField, srcField))
+	for i := 0; i < tSrc.NumFields(); i++ {
+		dstField := tSrc.Field(i)
+		if !dstField.Exported() {
+			continue
+		}
+		dstFieldName := dstField.Name()
+		srcField, ok := corr[dstFieldName]
+		if !ok {
+			continue
+		}
+		sb.WriteString(fmt.Sprintf("  %s: src.%s,\n", dstFieldName, srcField))
 	}
 
 	sb.WriteString(" }\n")

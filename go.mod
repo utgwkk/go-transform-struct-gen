@@ -7,7 +7,6 @@ require (
 	github.com/gkampitakis/go-snaps v0.4.6
 	github.com/mfridman/tparse v0.12.2
 	github.com/stretchr/testify v1.8.4
-	golang.org/x/exp v0.0.0-20230522175609-2e198f4a06a1
 	golang.org/x/tools v0.10.0
 )
 
